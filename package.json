@@ -1,0 +1,16 @@
+{
+  "name": "sky_high",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.7",
+    "express": "^4.17.3",
+    "physijs": "^1.0.4",
+    "three": "^0.137.5"
+  }
+}
