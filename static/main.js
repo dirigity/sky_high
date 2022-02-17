@@ -1,5 +1,6 @@
 // import * as THREE from './../node_modules/three/build/three.module.js';
 import * as THREE from '/three';
+// import * as THREE from '/three';
 
 
 import { GLTFLoader } from './../node_modules/three/examples/jsm/loaders/GLTFLoader.js';
@@ -14,7 +15,8 @@ console.log(camera);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(devicePixelRatio)
-renderer.setSize(innerWidth, innerHeight)
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding
 document.body.appendChild(renderer.domElement);
 
 const loader = new GLTFLoader();
@@ -31,15 +33,30 @@ loader.load('untitled.gltf', function (gltf) {
 });
 
 
-// const light = new THREE.PointLight(0xffffff, 1);
-// light.position.set(0, 10, 0)
-// scene.add(light)
+const light = new THREE.HemisphereLight('white', // bright sky color
+  'darkslategrey', // dim ground color
+  0.3, // intensity
+)
+console.log(light)
+scene.add(light)
+console.log(scene)
+
+// const light2 = new THREE.PointLight(0xffffff, 1);
+// light2.position.set(0, 10, 0)
+// scene.add(light2)
 
 var keys = [];
 var ratony = 0;
 var ratonx = 0;
-window.onkeyup = function (e) { keys[e.keyCode] = false; }
-window.onkeydown = function (e) { keys[e.keyCode] = true; }
+
+let ws_url = "ws://" + location.host + "" + 1;
+console.log(ws_url)
+const ws = new WebSocket(ws_url)
+
+ws.onmessage = (msg) => {
+  keys = JSON.parse(msg.data)
+};
+
 
 let time = 0
 let speed = 0.1;
@@ -70,7 +87,7 @@ function animate() {
   if (keys[32]) { // space
     camera.position.add(cameraUp);
   }
-  if (keys[16]) { // shift
+  if (keys[160]) { // shift
     camera.position.sub(cameraUp);
   }
 
@@ -115,12 +132,11 @@ function ScrollDown() {
 
 function handleOrientation(event) {
   var x = event.beta;  // In degree in the range [-180,180)
-  var y = event.gamma; // In degree in the range [-90,90)
+  var y = event.gamma + 90; // In degree in the range [-90,90)
   let z = event.alpha;
 
   console.log(x, y);
-
-  camera.rotation._x = y / 180 * Math.PI;
+  camera.rotation._x = -y / 180 * Math.PI;
   camera.rotation._y = x / 180 * Math.PI;
   camera.rotation._z = z / 180 * Math.PI;
 
