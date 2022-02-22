@@ -3,8 +3,6 @@ import DeviceOrientationControls from './gyro_cam.js';
 import * as THREE from 'three';
 import * as OIMO from "./oimo.js"
 
-console.log(OIMO)
-
 function addStaticBox(x, y, z, sx, sy, sz, scene, world) {
     world.add({ size: [sx, sy, sz], pos: [x, y, z] });
     const geometry = new THREE.BoxGeometry(sx, sy, sz, 1, 1, 1);
@@ -27,7 +25,6 @@ export default function SetUpWorld() {
 
     stereo_effect.setSize(window.innerWidth, window.innerHeight);
 
-    console.log(scene);
     scene.background = new THREE.Color(0x333333);
 
 
@@ -47,17 +44,9 @@ export default function SetUpWorld() {
     // create geometry
 
 
-    let world = new OIMO.World({
-        timestep: 1 / 60,
-        iterations: 8,
-        broadphase: 2,
-        worldscale: 1,
-        random: true,
-        info: false,
-        gravity: [0, -9.8, 0]
-    });
+    let world = new OIMO.World();
     for (let i = 0; i < 100; i++) {
-        addStaticBox(0, -5, i * 5, 4, 1, 3, scene, world);
+        addStaticBox(0, -5, -i * 5, 4, 1, 3, scene, world);
 
     }
 
@@ -74,7 +63,7 @@ export default function SetUpWorld() {
 
     let hit_box = world.add(options);
 
-    console.log(hit_box)
+    console.log(world)
 
 
 

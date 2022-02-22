@@ -16,13 +16,11 @@ function animate() {
 	time++;
 
 	physics_world.step();
-	camera_body.setRotation({ x: 0, y: 0, z: 0 })
-	//camera_body.linearVelocity.multiplyScalar(0.4);
 
 
 	camera.position.set(camera_body.getPosition().x, camera_body.getPosition().y, camera_body.getPosition().z)
 
-	if (time % 30 == 0) console.log(camera_body.getPosition(), camera.position, camera.rotation)
+	if (time % 100 == 0) console.log(camera_body.getPosition(), camera_body.linearVelocity, camera.position, camera.rotation)
 
 	if (vr) {
 		controls.update();
@@ -55,68 +53,117 @@ function animate() {
 	cameraRight.setLength(1);
 
 	if (movement_mode == "fly") {
-		physics_world.gravity = [0, 0, 0];
+
+		const ACELERATION = 0.7
+		const MAX_SPEED = 40;
+		const DRAG = 0.97
+
+		camera_body.setRotation({ x: 0, y: 0, z: 0 })
+
+		// console.log(camera_body.linearVelocity, camera_body.linearVelocity.length())
+
+		if (camera_body.linearVelocity.length() > MAX_SPEED) {
+			camera_body.linearVelocity.normalize().multiplyScalar(MAX_SPEED)
+			console.log("chill")
+		}
+
+		if (keys()[87] || keys()[83] || keys()[65] || keys()[68] || keys()[32] || keys()[160]) {
+			camera_body.linearVelocity.multiplyScalar(1 - (1 - DRAG) * 0.7);
+		} else {
+			camera_body.linearVelocity.multiplyScalar(DRAG);
+
+		}
 
 		if (keys()[87]) { // w
 			// camera.position.add(cameraFacing);
-			camera_body.applyImpulse(camera_body.position, cameraFacing);
+			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(ACELERATION));
 		}
 		if (keys()[83]) { // s
 			// camera.position.sub(cameraFacing);
-			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(-1));
+			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(-ACELERATION));
 
 		}
 		if (keys()[65]) { // a
 			// camera.position.add(cameraRight);
-			camera_body.applyImpulse(camera_body.position, cameraRight);
+			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(ACELERATION));
 
 		}
 		if (keys()[68]) { // d
 			// camera.position.sub(cameraRight);
-			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(-1));
+			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(-ACELERATION));
 
 		}
 		if (keys()[32]) { // space
 			// camera.position.add(cameraUp);
-			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, 1, 0));
+			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, ACELERATION, 0));
 
 		}
 		if (keys()[160]) { // shift
 			// camera.position.sub(cameraUp);
-			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, -1, 0));
+			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, -ACELERATION, 0));
 		}
 
 	} else if (movement_mode == "walk") {
-		//physics_world.gravity = [0, -9.8, 0];
+		physics_world.gravity = { x: 0, y: -9.8, z: 0 };
+		const ACELERATION = 0.7
+		const MAX_SPEED = 40;
+		const DRAG = 0.97
+
+		// console.log(camera_body.linearVelocity, camera_body.linearVelocity.length())
+
+		if (camera_body.linearVelocity.length() > MAX_SPEED) {
+			camera_body.linearVelocity.normalize().multiplyScalar(MAX_SPEED)
+			console.log("chill")
+		}
+
+		if (keys()[87] || keys()[83] || keys()[65] || keys()[68] || keys()[32] || keys()[160]) {
+			camera_body.linearVelocity.multiplyScalar(1 - (1 - DRAG) * 0.7);
+		} else {
+			camera_body.linearVelocity.multiplyScalar(DRAG);
+
+		}
+
 		if (keys()[87]) { // w
 			// camera.position.add(cameraFacing);
-			camera_body.applyImpulse(camera_body.position, cameraFacing);
+			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(ACELERATION));
 		}
 		if (keys()[83]) { // s
 			// camera.position.sub(cameraFacing);
-			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(-1));
+			camera_body.applyImpulse(camera_body.position, cameraFacing.multiplyScalar(-ACELERATION));
 
 		}
 		if (keys()[65]) { // a
 			// camera.position.add(cameraRight);
-			camera_body.applyImpulse(camera_body.position, cameraRight);
+			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(ACELERATION));
 
 		}
 		if (keys()[68]) { // d
 			// camera.position.sub(cameraRight);
-			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(-1));
+			camera_body.applyImpulse(camera_body.position, cameraRight.multiplyScalar(-ACELERATION));
 
 		}
 		if (keys()[32]) { // space
 			// camera.position.add(cameraUp);
-			if (true || grounded)
-				camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, 1, 0));
+			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, ACELERATION, 0));
 
+		}
+		if (keys()[160]) { // shift
+			// camera.position.sub(cameraUp);
+			camera_body.applyImpulse(camera_body.position, new THREE.Vector3(0, -ACELERATION, 0));
 		}
 	}
 
+	if (keys()[70] && !last_keys[70]) { // f
+		if (movement_mode == "fly") {
+			movement_mode = "walk"
+		} else if (movement_mode == "walk") {
+			movement_mode = "elitros"
+		} else if (movement_mode == "elitros") {
+			movement_mode = "fly"
+		}
+	}
 
-	if (keys()[82] && !last_keys[82]) { // reload
+	if (keys()[82] && !last_keys[82]) { // r
 		window.location.reload(false);
 	}
 	if (keys()[81] && !last_keys[81]) { // q
