@@ -5,10 +5,12 @@ const ioHook = require('iohook');
 const PORT = 808
 
 http.createServer((request, response) => {
-    console.log(request.url)
-    if (request.url == "/three") request.url = "/node_modules/three/build/three.module.js"
+    if (request.url == "/") request.url = "/index.html"
 
-    fs.readFile(`.${request.url}`, (err, data) => {
+    let finalURL = `./dist${request.url}`;
+    console.log("request: ", finalURL)
+
+    fs.readFile(finalURL, (err, data) => {
 
         if (err) {
             console.log("failed")

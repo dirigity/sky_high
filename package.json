@@ -2,15 +2,12 @@
   "name": "sky_high",
   "private": true,
   "version": "0.0.0",
-  "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+  "scripts": {},
   "dependencies": {
     "dat.gui": "^0.7.7",
     "express": "^4.17.3",
     "iohook": "0.6.6",
+    "oimo": "^1.0.9",
     "physijs": "^1.0.4",
     "three": "^0.137.5",
     "ws": "^8.5.0"
